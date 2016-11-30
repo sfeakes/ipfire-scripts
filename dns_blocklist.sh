@@ -164,6 +164,7 @@ echo "# This file should not be manually edited                          #" >> $
 echo "# Last updated: `date`                       #" >> $FINAL_HOSTS
 echo "####################################################################" >>  $FINAL_HOSTS
 echo "" >> $FINAL_HOSTS
+echo "server:" >> $FINAL_HOSTS
 
 if [ $USE_UNBIND -eq 0 ]; then
   awk -v ip=$UNBIND_RETURN '{printf "local-data: \"%s A %s\"\n",$1,ip}' < $TMP_HOSTS_FILE >> $FINAL_HOSTS

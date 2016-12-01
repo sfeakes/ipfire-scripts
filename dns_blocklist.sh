@@ -47,10 +47,9 @@ BLOCK_HOST_URLS=( \
                  http://www.malwaredomainlist.com/hostslist/hosts.txt \
                  http://winhelp2002.mvps.org/hosts.txt \
                  "http://pgl.yoyo.org/as/serverlist.php?hostformat=hosts&showintro=0&mimetype=plaintext" \
-                 https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/social/hosts \
+                 https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts \
                  http://someonewhocares.org/hosts/ \
                  http://sysctl.org/cameleon/hosts \
-                 https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts \
                  http://hosts-file.net/ad_servers.txt \
 #                 http://hosts-file.net/exp.txt \
 #                 http://hosts-file.net/hjk.txt \

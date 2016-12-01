@@ -22,7 +22,40 @@ Then simply run the script every time you want to update the blocklist. (use fcr
 - create a file /etc/sysconfig/dnsmasq with following the contents
 - CUSTOM_ARGS="--addn-hosts=/var/ipfire/dhcp/blocked.hosts"
 
-### unbound ###
+### configuration ###
+
+If you want to tailer your configuration, these are the options. (you must edit the script, no comand line parameters are read)
+-Custom blacklist
+-Custom whitelist
+-Change default IP that the DNS server returns
+-Add / Remove sources for the blocklist generation
+
+#### Custom blacklist & whitelist  ####
+```LOCAL_BLACKLIST="./blacklist"
+LOCAL_WHITELIST="./whitelist"```
+
+Change the above to point to your custom files. The files should contain domain names only. blacklist will be added to the DNS block list, whitelist will be used to remove any entries that match from the source blocklists that are downloaded.
+```# example blacklist /var/ipfire/dhcp/blacklist
+activate.adobe.com
+www.trovi.com
+cdn.wanderburst.com
+www.wanderburst.com
+d13.zedo.com
+d3.zedo.com
+wanderburst.akamaihd.net
+wanderburst-a.akamaihd.net
+```
+
+#### IP that the DNS server returns  ####
+```UNBIND_RETURN="0.0.0.0"```
+Change to any IP you like.  
+This only works with unbound, dnsmasq is fixed to default.  default is 127.0.0.1 for both dnsmasq & unbound
+
+#### Add / Remove sources for the blocklist generation  ####
+```BLOCK_HOST_URLS=(```
+Look for this variable in the script, then comment/uncomment the sources you wish to use.  The details are of each are in the table in section below
+
+### unbound nxdomain **EXPERIMENTAL use only** ###
 
 By default this script will tell the dns server to return a IP address for each entry, this means the source lists have to be very accurate and no wildcards can be used. For example, if your blocklist contains :-
 ```
@@ -36,7 +69,7 @@ By default this script will tell the dns server to return a IP address for each 
 Only those exact domains will be rejected. This will allow all subdomains, ie `ad2.junk1.doubleclick.net & junk3.doubleclick.net` to be accepted.  
 If you look at some of the lists from the sources, you will see hundreds of sub domains that all need to be blocked, and constantly get updated as new ones come out.
 
-With the “expermental nxdomain” option set, the script will sort all those domains down to the minimum, and block everything under that. In the example above it will simple use `doubleclick.net`, and block that and every domain under it. `eg *.doubleclick.net`
+With the “experimental nxdomain” option set, the script will sort all those domains down to the minimum, and block everything under that. In the example above it will simple use `doubleclick.net`, and block that and every domain under it. `eg *.doubleclick.net`
 
 To turn this option on, set the variable UNBIND_RETURN to either `refuse`, `static`, `always_refuse` or `always_nxdomain`. Description of these can be found in the "local-zone": section of the following URL.
 https://www.unbound.net/documentation/unbound.conf.html

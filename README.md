@@ -31,12 +31,14 @@ If you want to tailer your configuration, these are the options. (you must edit 
 - Add / Remove sources for the blocklist generation
 
 #### Custom blacklist & whitelist  ####
-```LOCAL_BLACKLIST="./blacklist"
+```
+LOCAL_BLACKLIST="./blacklist"
 LOCAL_WHITELIST="./whitelist"
 ```
 
 Change the above to point to your custom files. The files should contain domain names only. blacklist will be added to the DNS block list, whitelist will be used to remove any entries that match from the source blocklists that are downloaded.
-```# example blacklist /var/ipfire/dhcp/blacklist
+```
+# example blacklist /var/ipfire/dhcp/blacklist
 activate.adobe.com
 www.trovi.com
 cdn.wanderburst.com
@@ -48,12 +50,12 @@ wanderburst-a.akamaihd.net
 ```
 
 #### IP that the DNS server returns  ####
-```UNBIND_RETURN="0.0.0.0"```
+`UNBIND_RETURN="0.0.0.0"`
 Change to any IP you like.  
 This only works with unbound, dnsmasq is fixed to default.  default is 127.0.0.1 for both dnsmasq & unbound
 
 #### Add / Remove sources for the blocklist generation  ####
-```BLOCK_HOST_URLS=(```
+`BLOCK_HOST_URLS=(`
 Look for this variable in the script, then comment/uncomment the sources you wish to use.  The details are of each are in the table in section below
 
 ### unbound nxdomain **EXPERIMENTAL use only** ###

@@ -4,7 +4,7 @@
 # Create a hosts block list for use with unbound & dnsmasq         #
 #                                                                  #
 # Last updated: Dec 01 2016                                        #
-# Version 1.2.2                                                    #
+# Version 1.2.5                                                    #
 #                                                                  #
 ####################################################################
 
@@ -19,6 +19,12 @@ LOCAL_WHITELIST="./whitelist"
 # If you want unbound to return an IP address put it below,
 # 127.0.0.1 will be used if commented out
 #UNBIND_RETURN="0.0.0.0"
+#
+# EXPEREMENTAL make sure you read notes on main github page
+# if you want unbind to reject DNS request, rather than return an ip
+# use one of the qualifyers below
+#       refuse static always_refuse always_nxdomain
+#UNBIND_RETURN="refuse"
 #
 # Script will work out if you are using unbind or dnsmasq, you can hard code it
 # if you want
@@ -68,6 +74,41 @@ log () {
   fi
 }
 
+# I'm sure there is a cleaner way to do this, but this is what I've come up with so far.
+# create a TLD list in reverse, ie com.google.ad
+# sort that list (linux sort -f is used, works well on ipfire but probably iffy on other distributions)
+# run through TLD list and pick the shortest one.  ie if both com.google.ad & com.google.ad.bla exist, 
+# only use com.google.ad
+# reverse the TLD list again
+# use this reduced list and reject DNS requests on it
+experemental_nxdomain () {
+  exp_tmpfile="$TMP_HOSTS_FILE.experemental"
+  exp_reversefile="$TMP_HOSTS_FILE.reverse"
+
+  # sort -f is to ingore case, but it works at soring domain names. a.b.c, a.b.c.1, a.b.c1 (without -f a.b.c, a.b.c1, a.b.c.1)
+  cat $TMP_HOSTS_FILE | awk -F "." '{for(i=NF; i > 1; i--) printf "%s.", $i; print $1}' | uniq | sort -f > $exp_reversefile
+
+  if [ -f $exp_tmpfile ]; then
+    rm -rf $exp_tmpfile
+  fi
+
+  while read domain; do
+    if [ -z $last_domain ]; then
+      last_domain=$domain
+      continue
+    fi
+
+    if [[ ! $domain =~ $last_domain\..* ]]; then
+      echo $last_domain >> $exp_tmpfile
+#      echo "ADD    $last_domain"
+      last_domain=$domain
+#    else
+#      echo "IGNORE $domain exists in $last_domain"
+    fi
+  done < $exp_reversefile
+
+  cat $exp_tmpfile | awk -F "." '{for(i=NF; i > 1; i--) printf "%s.", $i; print $1}' > $TMP_HOSTS_FILE
+}
 
 if [ -z $USE_UNBIND ]; then
   if [ -f "$UNBOUND_SYSTEMD_SERVICE" ]; then
@@ -105,7 +146,7 @@ pass_urls=0
 fail_urls=0
 
 get_list_from_url() {
-  curl -v --max-time 30 --connect-timeout 5 --silent "$1" --stderr - | awk -v RS='\r|\n' '$1 ~ /^[0.0.0.0|127.0.0.1]/ {if ($2 != "localhost") printf "%s\n", tolower($2);}' >> $TMP_HOSTS_FILE
+  curl -v --max-time 8 --silent "$1" --stderr - | awk -v RS='\r|\n' '$1 ~ /^[0.0.0.0|127.0.0.1]/ {if ($2 != "localhost") printf "%s\n", tolower($2);}' >> $TMP_HOSTS_FILE
 
   if [ ${PIPESTATUS[0]} -ne 0 ]; then
     log "FAILED to load hosts from URL '$1'"
@@ -166,7 +207,13 @@ echo "" >> $FINAL_HOSTS
 
 if [ $USE_UNBIND -eq 0 ]; then
   echo "server:" >> $FINAL_HOSTS
-  awk -v ip=$UNBIND_RETURN '{printf "local-data: \"%s A %s\"\n",$1,ip}' < $TMP_HOSTS_FILE >> $FINAL_HOSTS
+
+  if [ "$UNBIND_RETURN" == "refuse" -o "$UNBIND_RETURN" == "static" -o "$UNBIND_RETURN" == "always_refuse" -o "$UNBIND_RETURN" == "always_nxdomain" ]; then
+    experemental_nxdomain 
+    awk -v rtn=$UNBIND_RETURN '{printf "local-zone: \"%s\" %s\n",$1,rtn}' < $TMP_HOSTS_FILE >> $FINAL_HOSTS
+  else
+    awk -v ip=$UNBIND_RETURN '{printf "local-data: \"%s A %s\"\n",$1,ip}' < $TMP_HOSTS_FILE >> $FINAL_HOSTS
+  fi
 else
   awk '{printf "127.0.0.1 %s\n",$1}' < $TMP_HOSTS_FILE >> $FINAL_HOSTS
 fi

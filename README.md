@@ -10,7 +10,7 @@ To install, ssh to your ipfire machine and use the following commands.
 cd ~
 mkdir -p bin
 cd bin
-wget https://raw.githubusercontent.com/sfeakes/ipfire-scripts/master/dns_blocklist.sh
+curl -O https://raw.githubusercontent.com/sfeakes/ipfire-scripts/master/dns_blocklist.sh
 chmod 755 dns_blocklist.sh
 ```
 Then simply run the script every time you want to update the blocklist. (use fcrontab to run it a regular intervals with cron)

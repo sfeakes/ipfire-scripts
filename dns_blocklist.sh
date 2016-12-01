@@ -4,7 +4,7 @@
 # Create a hosts block list for use with unbound & dnsmasq         #
 #                                                                  #
 # Last updated: Dec 01 2016                                        #
-# Version 1.2.1                                                    #
+# Version 1.2.2                                                    #
 #                                                                  #
 ####################################################################
 
@@ -105,7 +105,7 @@ pass_urls=0
 fail_urls=0
 
 get_list_from_url() {
-  curl -v --max-time 8 --silent "$1" --stderr - | awk -v RS='\r|\n' '$1 ~ /^[0.0.0.0|127.0.0.1]/ {if ($2 != "localhost") printf "%s\n", tolower($2);}' >> $TMP_HOSTS_FILE
+  curl -v --max-time 30 --connect-timeout 5 --silent "$1" --stderr - | awk -v RS='\r|\n' '$1 ~ /^[0.0.0.0|127.0.0.1]/ {if ($2 != "localhost") printf "%s\n", tolower($2);}' >> $TMP_HOSTS_FILE
 
   if [ ${PIPESTATUS[0]} -ne 0 ]; then
     log "FAILED to load hosts from URL '$1'"

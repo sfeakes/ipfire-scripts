@@ -7,11 +7,11 @@ The file will have duplicates and most (if not all) bad entries removed.  If you
 
 To install, ssh to your ipfire machine and use the following commands.
 ```
-    cd ~
-    mkdir -p bin
-    cd bin
-    wget https://raw.githubusercontent.com/sfeakes/ipfire-scripts/master/dns_blocklist.sh
-    chmod 755 dns_blocklist.sh
+cd ~
+mkdir -p bin
+cd bin
+wget https://raw.githubusercontent.com/sfeakes/ipfire-scripts/master/dns_blocklist.sh
+chmod 755 dns_blocklist.sh
 ```
 Then simply run the script every time you want to update the blocklist. (use fcrontab to run it a regular intervals with cron)
 
@@ -26,10 +26,11 @@ Then simply run the script every time you want to update the blocklist. (use fcr
 
 By default this script will tell the dns server to return a IP address for each entry, this means the source lists have to be very accurate and no wildcards can be used. For example, if your blocklist contains :-
 ```
-    junk1.doubleclick.net
-    junk2.doubleclick.net
-    doubleclick.net
-    ad.junk1.doubleclick.net
+ junk1.doubleclick.net
+ junk2.doubleclick.net
+ doubleclick.net
+ ad.junk1.doubleclick.net
+ adjunk.google.com
 ```
 
 Only those exact domains will be rejected. This will allow all subdomains, ie `ad2.junk1.doubleclick.net & junk3.doubleclick.net` to be accepted.  
@@ -40,6 +41,21 @@ With the “expermental nxdomain” option set, the script will sort all those d
 To turn this option on, set the variable UNBIND_RETURN to either `refuse`, `static`, `always_refuse` or `always_nxdomain`. Description of these can be found in the "local-zone": section of the following URL.
 https://www.unbound.net/documentation/unbound.conf.html
 
+Using the above list, running the script in normal mode will create a file like
+```
+local-data: "junk1.doubleclick.net A 127.0.0.1"
+local-data: "junk1.doubleclick.net A 127.0.0.1"
+local-data: "junk2.doubleclick.net A 127.0.0.1"
+local-data: "doubleclick.net A 127.0.0.1"
+local-data: "ad.junk1.doubleclick.net A 127.0.0.1"
+local-data: "adjunk.google.com A 127.0.0.1"
+```
+
+Running the scrtipt in expermental nxdomain would create the following
+```
+local-zone: "doubleclick.net" reject
+local-zone: "adjunk.google.com" reject
+```
 
 ### Below are a list of the sources that can be configured (turned on or off) in the script ###
 

@@ -81,9 +81,10 @@ local-zone: "adjunk.google.com" reject
 
 ## bandwidth_alert.sh ##
 
-Edit the script with your monthly bandwidth allowance, and email address.
-Set it to run once a day. (fcrontab)
-It will email you if you are trending over your quota for the month.
+- Edit the script with your monthly bandwidth allowance, and email address.  
+- Set it to run once a day. (fcrontab)  
+
+It will email you if you are trending over your quota for the month.  
 The script takes monthly quota, divides that by days in current month. If current monthly usage is greater than daily allowance * day in month, you get an alert. 
 
 ## create_ios_openvpn.sh ##

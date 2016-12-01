@@ -1,9 +1,9 @@
 #!/bin/bash
 
 ####################################################################
-# Create a hosts block list for use with unbound;                  #
+# Create a hosts block list for use with unbound & dnsmasq         #
 #                                                                  #
-# Last updated: Fri Nov 30 2016                                    #
+# Last updated: Dec 01 2016                                        #
 # Version 1.2.1                                                    #
 #                                                                  #
 ####################################################################
@@ -28,6 +28,24 @@ LOCAL_WHITELIST="./whitelist"
 # If you don't want to use the default host location, uncomment below
 #FINAL_HOSTS="./blocklist.conf"
 
+# Uncomment / comment any sources you want to use to build your block list.
+#
+BLOCK_HOST_URLS=( \
+                 https://adaway.org/hosts.txt \
+                 http://www.malwaredomainlist.com/hostslist/hosts.txt \
+                 http://winhelp2002.mvps.org/hosts.txt \
+                 "http://pgl.yoyo.org/as/serverlist.php?hostformat=hosts&showintro=0&mimetype=plaintext" \
+                 https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts \
+#                 http://someonewhocares.org/hosts/ \
+#                 http://sysctl.org/cameleon/hosts \
+#                 http://hosts-file.net/ad_servers.txt \
+#                 http://hosts-file.net/download/hosts.txt \
+#                 http://hostsfile.org/Downloads/hosts.txt \
+#                 http://hostsfile.mine.nu/Hosts.txt \
+#                 https://raw.githubusercontent.com/notracking/hosts-blocklists/master/hostnames.txt \
+                )
+
+
 
 ####################################################################
 # There should be no need to edit beyond this point.
@@ -40,24 +58,6 @@ DNSMASQ_FINAL_HOSTS="/var/ipfire/dhcp/blocked.hosts"
 
 UNBOUND_SYSTEMD_SERVICE="/etc/init.d/unbound"
 DNSMASQ_SYSTEMD_SERVICE="/etc/init.d/dnsmasq"
-
-
-BLOCK_HOST_URLS=( \
-                 https://adaway.org/hosts.txt \
-                 http://www.malwaredomainlist.com/hostslist/hosts.txt \
-                 http://winhelp2002.mvps.org/hosts.txt \
-                 "http://pgl.yoyo.org/as/serverlist.php?hostformat=hosts&showintro=0&mimetype=plaintext" \
-                 https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts \
-                 http://someonewhocares.org/hosts/ \
-                 http://sysctl.org/cameleon/hosts \
-                 http://hosts-file.net/ad_servers.txt \
-#                 http://hosts-file.net/exp.txt \
-#                 http://hosts-file.net/hjk.txt \
-#                 http://hosts-file.net/mmt.txt \
-#                 http://hosts-file.net/emd.txt \
-#                 http://hosts-file.net/psh.txt \
-#                 http://hosts-file.net/fsa.txt \
-                )
 
 log () {
   # IF we are running interactivle just print, if not (ie from cron) then log to ipfire

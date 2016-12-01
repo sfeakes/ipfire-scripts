@@ -75,3 +75,17 @@ local-zone: "adjunk.google.com" reject
 |[Airelle's host file](http://rlwpx.free.fr/WPFF/hosts.htm)                        | NOT SUPPORTED YET                                    | CC Attribution 3.0 |
 |[Shalla's Blacklists ](http://www.shallalist.de/)                                 | NOT SUPPORTED YET                                    | ? |
 
+
+
+# Little toys #
+
+## bandwidth_alert.sh ##
+
+Edit the script with your monthly bandwidth allowance, and email address.
+Set it to run once a day. (fcrontab)
+It will email you if you are trending over your quota for the month.
+The script takes monthly quota, divides that by days in current month. If current monthly usage is greater than daily allowance * day in month, you get an alert. 
+
+## create_ios_openvpn.sh ##
+
+Create a client vpn file for use on an IOS / Android device with OpenVPN Connect app

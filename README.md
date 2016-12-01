@@ -25,8 +25,8 @@ Then simply run the script every time you want to update the blocklist. (use fcr
 
 | URL                                                                              | Details                                                 | License |
 | -------                                                                          | -------                                                 | ------- |
-|[Adaway list](https://adaway.org/hosts.txt)                                       | Infrequent updates, approx. 400 entries                 | CC Attribution 3.0 |
-|[Malware domain list] (http://www.malwaredomainlist.com/hostslist/hosts.txt)      | Daily updates                                           | non-commercial community project |
+|[Adaway list](https://adaway.org/hosts.txt)                                       | Infrequent updates, approx. 500 entries                 | CC Attribution 3.0 |
+|[Malware domain list] (http://www.malwaredomainlist.com/hostslist/hosts.txt)      | Daily, aprox 1,300 updates                                           | non-commercial community project |
 |[MVPS Hosts](http://winhelp2002.mvps.org/hosts.htm)                               | Infrequent updates, approx. 15.000 entries              | CC Attribution-NonCommercial-ShareAlike 4.0 |
 |[Peter Lowe’s Ad server list](http://pgl.yoyo.org/adservers/)                     | Weekly updates, approx. 2.500 entries                   | ? |
 |[StevenBlack - hosts](https://github.com/StevenBlack/hosts/)                      |                                                         | ? |

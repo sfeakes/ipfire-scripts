@@ -4,7 +4,7 @@
 # Create a hosts block list for use with unbound;                  #
 #                                                                  #
 # Last updated: Fri Nov 30 2016                                    #
-# Version 1.2                                                      #
+# Version 1.2.1                                                    #
 #                                                                  #
 ####################################################################
 
@@ -164,9 +164,9 @@ echo "# This file should not be manually edited                          #" >> $
 echo "# Last updated: `date`                       #" >> $FINAL_HOSTS
 echo "####################################################################" >>  $FINAL_HOSTS
 echo "" >> $FINAL_HOSTS
-echo "server:" >> $FINAL_HOSTS
 
 if [ $USE_UNBIND -eq 0 ]; then
+  echo "server:" >> $FINAL_HOSTS
   awk -v ip=$UNBIND_RETURN '{printf "local-data: \"%s A %s\"\n",$1,ip}' < $TMP_HOSTS_FILE >> $FINAL_HOSTS
 else
   awk '{printf "127.0.0.1 %s\n",$1}' < $TMP_HOSTS_FILE >> $FINAL_HOSTS

@@ -6,12 +6,13 @@ Will download hosts that are labeled as malicious from multiple sources and crea
 The file will have duplicates and most (if not all) bad entries removed.  If you use the expermental nxdomain option, will also have duplicate sub domains removed.  
 
 To install, ssh to your ipfire machine and use the following commands.
+```
     cd ~
     mkdir -p bin
     cd bin
     wget https://raw.githubusercontent.com/sfeakes/ipfire-scripts/master/dns_blocklist.sh
     chmod 755 dns_blocklist.sh
-
+```
 Then simply run the script every time you want to update the blocklist. (use fcrontab to run it a regular intervals with cron)
 
 ### If you are using dnsmasq and not unbount, there is one further step ###
@@ -24,11 +25,12 @@ Then simply run the script every time you want to update the blocklist. (use fcr
 ### unbound ###
 
 By default this script will tell the dns server to return a IP address for each entry, this means the source lists have to be very accurate and no wildcards can be used. For example, if your blocklist contains :-
+```
     junk1.doubleclick.net
     junk2.doubleclick.net
     doubleclick.net
     ad.junk1.doubleclick.net
-
+```
 
 Only those exact domains will be rejected. This will allow all subdomains, ie `ad2.junk1.doubleclick.net & junk3.doubleclick.net` to be accepted.  
 If you look at some of the lists from the sources, you will see hundreds of sub domains that all need to be blocked, and constantly get updated as new ones come out.

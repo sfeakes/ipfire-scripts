@@ -13,7 +13,15 @@ To install, ssh to your ipfire machine and use the following commands.
 
 Then simply run the script every time you want to update the blocklist. (use fcrontab to run it a regular intervals with cron)
 
-Below are a list of the sources that can be configured in the script.
+### If you are using dnsmasq and not unbount, there is one further step ###
+(dnsmasq is default on IPFire 2.19 - Core Update 105 and below)
+(unbound is default on IPFire 2.19 - Core Update 106 and above)
+
+- create a file /etc/sysconfig/dnsmasq with following the contents
+- CUSTOM_ARGS="--addn-hosts=/var/ipfire/dhcp/blocked.hosts"
+
+
+Below are a list of the sources that can be configured (turned on or off) in the script.
 
 | URL                                                                              | Details                                                 | License |
 | -------                                                                          | -------                                                 | ------- |

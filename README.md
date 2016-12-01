@@ -25,10 +25,10 @@ Then simply run the script every time you want to update the blocklist. (use fcr
 ### configuration ###
 
 If you want to tailer your configuration, these are the options. (you must edit the script, no comand line parameters are read)
--Custom blacklist
--Custom whitelist
--Change default IP that the DNS server returns
--Add / Remove sources for the blocklist generation
+- Custom blacklist
+- Custom whitelist
+- Change default IP that the DNS server returns
+- Add / Remove sources for the blocklist generation
 
 #### Custom blacklist & whitelist  ####
 ```LOCAL_BLACKLIST="./blacklist"

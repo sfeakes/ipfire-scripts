@@ -1,8 +1,17 @@
-# ipfire-scripts
+# ipfire-scripts #
 
-dns_blocker.sh
+## dns_blocker.sh ##
 
 Will download hosts that are labeled as malicious from multiple sources and create a file that will cause unbound or dnsmasq to block them via DNS queries. 
+
+To install, ssh to your ipfire machine and use the following commands.
+- cd ~ -
+- mkdir -p bin -
+- cd bin -
+- wget https://raw.githubusercontent.com/sfeakes/ipfire-scripts/master/dns_blocklist.sh -
+- chmod 755 dns_blocklist.sh -
+
+Then simply run the script every time you want to update the blocklist. (use fcrontab to run it a regular intervals with cron)
 
 Below are a list of the sources that can be configured in the script.
 

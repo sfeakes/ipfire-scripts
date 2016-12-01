@@ -34,7 +34,8 @@ If you look at some of the lists from the sources, you will see hundreds of sub 
 
 With the “expermental nxdomain” option set, the script will sort all those domains down to the minimum, and block everything under that. In the example above it will simple use doubleclick.net, and block that and every domain under it. eg *.doubleclick.net
 
-To turn this option on, set the variable UNBIND_RETURN to either refuse, static, always_refuse or always_nxdomain. Description of these can be found at the below URL.
+To turn this option on, set the variable UNBIND_RETURN to either refuse, static, always_refuse or always_nxdomain. Description of these can be found in the "local-zone": section of the below URL.
+https://www.unbound.net/documentation/unbound.conf.html
 
 
 ### Below are a list of the sources that can be configured (turned on or off) in the script ###

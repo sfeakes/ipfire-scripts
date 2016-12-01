@@ -19,8 +19,8 @@ Then simply run the script every time you want to update the blocklist. (use fcr
 (dnsmasq is default on IPFire 2.19 - Core Update 105 and below)  
 (unbound is default on IPFire 2.19 - Core Update 106 and above)
 
-- create a file /etc/sysconfig/dnsmasq with following the contents
-- CUSTOM_ARGS="--addn-hosts=/var/ipfire/dhcp/blocked.hosts"
+- create a file `/etc/sysconfig/dnsmasq` with following the contents
+- `CUSTOM_ARGS="--addn-hosts=/var/ipfire/dhcp/blocked.hosts"`
 
 ### configuration ###
 
@@ -32,7 +32,8 @@ If you want to tailer your configuration, these are the options. (you must edit 
 
 #### Custom blacklist & whitelist  ####
 ```LOCAL_BLACKLIST="./blacklist"
-LOCAL_WHITELIST="./whitelist"```
+LOCAL_WHITELIST="./whitelist"
+```
 
 Change the above to point to your custom files. The files should contain domain names only. blacklist will be added to the DNS block list, whitelist will be used to remove any entries that match from the source blocklists that are downloaded.
 ```# example blacklist /var/ipfire/dhcp/blacklist

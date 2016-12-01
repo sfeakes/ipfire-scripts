@@ -50,12 +50,16 @@ wanderburst-a.akamaihd.net
 ```
 
 #### IP that the DNS server returns  ####
-`UNBIND_RETURN="0.0.0.0"`
+```
+UNBIND_RETURN="0.0.0.0"
+```
 Change to any IP you like.  
 This only works with unbound, dnsmasq is fixed to default.  default is 127.0.0.1 for both dnsmasq & unbound
 
 #### Add / Remove sources for the blocklist generation  ####
-`BLOCK_HOST_URLS=(`
+```
+BLOCK_HOST_URLS=(
+```
 Look for this variable in the script, then comment/uncomment the sources you wish to use.  The details are of each are in the table in section below
 
 ### unbound nxdomain **EXPERIMENTAL use only** ###

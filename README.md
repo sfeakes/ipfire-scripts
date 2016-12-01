@@ -21,7 +21,7 @@ Then simply run the script every time you want to update the blocklist. (use fcr
 - CUSTOM_ARGS="--addn-hosts=/var/ipfire/dhcp/blocked.hosts"
 
 
-Below are a list of the sources that can be configured (turned on or off) in the script.
+### Below are a list of the sources that can be configured (turned on or off) in the script ###
 
 | URL                                                                              | Details                                                 | License |
 | -------                                                                          | -------                                                 | ------- |

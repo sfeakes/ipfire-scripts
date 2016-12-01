@@ -97,7 +97,7 @@ local-zone: "doubleclick.net" reject
 local-zone: "adjunk.google.com" reject
 ```
 
-### Below are a list of the sources that can be configured (turned on or off) in the script ###
+### Below are a list of the sources that can be configured (turned on or off) in the script with the BLOCK_HOST_URLS= variable ###
 
 | URL                                                                              | Details                                              | License |
 | -------                                                                          | -------                                              | ------- |
@@ -117,7 +117,10 @@ local-zone: "adjunk.google.com" reject
 
 
 
-# Little toys #
+
+
+
+# Other scripts #
 
 ## bandwidth_alert.sh ##
 

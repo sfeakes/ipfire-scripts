@@ -4,7 +4,7 @@
 # Create a hosts block list for use with unbound & dnsmasq         #
 #                                                                  #
 # Last updated: Dec 01 2016                                        #
-# Version 1.2.5                                                    #
+# Version 1.2.6                                                    #
 #                                                                  #
 ####################################################################
 
@@ -209,7 +209,8 @@ if [ $USE_UNBIND -eq 0 ]; then
   echo "server:" >> $FINAL_HOSTS
 
   if [ "$UNBIND_RETURN" == "refuse" -o "$UNBIND_RETURN" == "static" -o "$UNBIND_RETURN" == "always_refuse" -o "$UNBIND_RETURN" == "always_nxdomain" ]; then
-    experemental_nxdomain 
+    experemental_nxdomain
+    finalcount=$(wc -l < $TMP_HOSTS_FILE)
     awk -v rtn=$UNBIND_RETURN '{printf "local-zone: \"%s\" %s\n",$1,rtn}' < $TMP_HOSTS_FILE >> $FINAL_HOSTS
   else
     awk -v ip=$UNBIND_RETURN '{printf "local-data: \"%s A %s\"\n",$1,ip}' < $TMP_HOSTS_FILE >> $FINAL_HOSTS

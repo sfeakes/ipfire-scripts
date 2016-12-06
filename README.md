@@ -110,6 +110,7 @@ local-zone: "adjunk.google.com" reject
 Example
 ```
 dns_blocklist.sh -l
+dns_blocklist.sh -s 1,2,5
 dns_blocklist.sh -s 1,2,http://mylist.com/host.txt 
 dns_blocklist.sh -s 1,"http://pgl.yoyo.org/as/serverlist.php?hostformat=hosts&showintro=0&mimetype=plaintext"
 ```

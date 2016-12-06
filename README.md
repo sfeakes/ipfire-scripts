@@ -26,7 +26,7 @@ Then simply run the script every time you want to update the blocklist. (use fcr
 - `CUSTOM_ARGS="--addn-hosts=/var/ipfire/dhcp/blocked.hosts"`
 
 ### Command line parameters ###
-
+```
 ./dns_blocklist.sh <parameters>
   Parameters are the following, only use one of the formats, -p OR --parameter, do not use both
   -h --help                 This message
@@ -41,7 +41,7 @@ Then simply run the script every time you want to update the blocklist. (use fcr
                             use index number from -l value or URL
 
 Example:-  ./dns_blocklist.sh -s 1,2,http://mylist.com/host.txt -r 0.0.0.0
-
+```
 #### Custom blacklist & whitelist  ####
 Example
 ```

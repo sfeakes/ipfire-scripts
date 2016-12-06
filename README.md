@@ -119,10 +119,7 @@ List all knows sources with the –l parameter.
 Enable sources with –s <list>.
 <list> Must be a list of numbers and urls, that are comma separated and contain no spaces.  If a number is used, the corresponding known source will be used to download sources from, if a url is used, the script will try to download content from that url. If you need to pass query parameters, then quots muse be used. 
 
-### Below are a list of the sources that can be configured (turned on or off) in the script with the BLOCK_HOST_URLS= variable ###
-
-
-### Below are a list of the sources that can be configured (turned on or off) in the script with the BLOCK_HOST_URLS= variable ###
+### Below are a list of the sources that can be configured (turned on or off) with -s parameter ###
 
 | URL                                                                              | Details                                              | License |
 | -------                                                                          | -------                                              | ------- |

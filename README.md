@@ -46,7 +46,7 @@ Example:-  ./dns_blocklist.sh -s 1,2,http://mylist.com/host.txt -r 0.0.0.0
 Example
 ```
 dns_blocklist.sh –b ~/user/blacklist.hosts
-dns_blocklist.sh –b ~/user/whitelist.hosts
+dns_blocklist.sh –w ~/user/whitelist.hosts
 ```
 
 Change the above to point to your custom files. The files should contain domain names only. blacklist will be added to the DNS block list, whitelist will be used to remove any entries that match from the source blocklists that are downloaded.
@@ -87,7 +87,7 @@ If you look at some of the lists from the sources, you will see hundreds of sub 
 
 With the “experimental nxdomain” option set, the script will sort all those domains down to the minimum, and block everything under that. In the example above it will simple use `doubleclick.net`, and block that and every domain under it. `eg *.doubleclick.net`
 
-To turn this option on, set the command like parameter -r or --dns to either `refuse`, `static`, `always_refuse` or `always_nxdomain`. Description of these can be found in the "local-zone": section of the following URL.
+To turn this option on, set the command line parameter -r or --dns to either `refuse`, `static`, `always_refuse` or `always_nxdomain`. Description of these can be found in the "local-zone": section of the following URL.
 https://www.unbound.net/documentation/unbound.conf.html
 
 Using the above list, running the script in normal mode will create a file like
@@ -115,9 +115,8 @@ dns_blocklist.sh -s 1,2,http://mylist.com/host.txt
 dns_blocklist.sh -s 1,"http://pgl.yoyo.org/as/serverlist.php?hostformat=hosts&showintro=0&mimetype=plaintext"
 ```
 
-List all knows sources with the –l parameter.
-Enable sources with –s <list>.
-<list> Must be a list of numbers and urls, that are comma separated and contain no spaces.  If a number is used, the corresponding known source will be used to download sources from, if a url is used, the script will try to download content from that url. If you need to pass query parameters, then quots muse be used. 
+List all knows sources with the –l parameter. This will list sources with an ID next to each, use this ID with the -s parameter.  
+Enable sources with –s Can be a list of numbers and urls, that are comma separated and contain no spaces.  If a number is used, the corresponding known source will be used to download sources from, if a url is used, the script will try to download content from that url. If you need to pass query parameters, then quots muse be used. 
 
 ### Below are a list of the sources that can be configured (turned on or off) with -s parameter ###
 

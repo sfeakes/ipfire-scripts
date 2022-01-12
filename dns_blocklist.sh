@@ -347,6 +347,11 @@ mv -f $TMP_HOSTS_FILE.out $TMP_HOSTS_FILE
 
 if [[ ! -z $LOCAL_WHITELIST && -f $LOCAL_WHITELIST ]]; then
   cat $TMP_HOSTS_FILE | grep -v -x -f $LOCAL_WHITELIST > $TMP_HOSTS_FILE.out
+  if [ ! -z $VERBOSE ]; then 
+    bcount=$(cat $TMP_HOSTS_FILE | wc -l)
+    acount=$(cat $TMP_HOSTS_FILE.out | wc -l)
+    echo "Removed $(expr $bcount - $acount) domain names due to whitelist"
+  fi
   mv -f $TMP_HOSTS_FILE.out $TMP_HOSTS_FILE
 fi
 

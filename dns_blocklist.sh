@@ -293,6 +293,11 @@ else
   touch $TMP_HOSTS_FILE
 fi
 
+if [ ! -z $VERBOSE ]; then 
+  count=$(cat $TMP_HOSTS_FILE | wc -l)
+  echo "Retreived $count domain names from local blacklist file"
+fi
+
 cnt=1
 
 if [ ! -z $SOURCES ]; then
@@ -306,11 +311,6 @@ for url in "${BLOCK_HOST_URLS[@]}"; do
   fi
   cnt=$((cnt+1))
 done
-
-if [ ! -z $VERBOSE ]; then 
-  count=$(cat $TMP_HOSTS_FILE | wc -l)
-  echo "Retreived $count domain names from local blacklist file"
-fi
 
 # Check if any URLs exist in the source list
 shopt -s nocasematch

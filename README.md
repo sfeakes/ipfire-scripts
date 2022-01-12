@@ -37,9 +37,9 @@ Written 158000 entries to /tmp/dnsblock.out
 
 
 Then simply run the script every time you want to update the blocklist. (use fcrontab to run it a regular intervals with cron)
-below is an example fcrontab entry that runs at midnight every day.
+below is an example fcrontab entry that runs at midnight every sunday.
 ```
-0 * * * *  /root/bin/dns_blocklist.sh -w /var/ipfire/dhcp/whitelist -b /var/ipfire/dhcp/blacklist
+0 0 * * 0  /root/bin/dns_blocklist.sh -w /var/ipfire/dhcp/whitelist -b /var/ipfire/dhcp/blacklist
 ```
 
 The github repo also contains blacklist, whitelist & blocklist.sources example files you can use and modify.

@@ -8,9 +8,11 @@
 #                                                                  #
 ####################################################################
 
-DEFAULT_SOURCES="1,2,3,12"
-DEFAULT_DNS="127.0.0.1"
-INTERNAL_WHITELIST="localhost\|localhost.localdomain"
+
+#DEFAULT_DNS="127.0.0.1"
+DEFAULT_DNS="0.0.0.0"
+INTERNAL_WHITELIST="localhost\|localhost.localdomain\|local"
+VERSION="1.1"
 
 # -l list sources
 # -s sourcelist
@@ -25,21 +27,12 @@ INTERNAL_WHITELIST="localhost\|localhost.localdomain"
 ####################################################################
 # 
 #
-BLOCK_HOST_URLS=( \
+
+DEFAULT_BLOCK_HOST_URLS=( \
                  https://adaway.org/hosts.txt \
-                 http://www.malwaredomainlist.com/hostslist/hosts.txt \
-                 http://winhelp2002.mvps.org/hosts.txt \
-                 "http://pgl.yoyo.org/as/serverlist.php?hostformat=hosts&showintro=0&mimetype=plaintext" \
+                 https://winhelp2002.mvps.org/hosts.txt \
                  https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts \
-                 http://someonewhocares.org/hosts/ \
-                 http://sysctl.org/cameleon/hosts \
-                 http://hosts-file.net/ad_servers.txt \
-                 http://hosts-file.net/download/hosts.txt \
-                 http://hostsfile.org/Downloads/hosts.txt \
-                 http://hostsfile.mine.nu/Hosts.txt \
-                 https://raw.githubusercontent.com/notracking/hosts-blocklists/master/hostnames.txt \
-                 https://easylist.to/easylist/easylist.txt \
-                 https://easylist.to/easylist/fanboy-annoyance.txt \
+                 https://raw.githubusercontent.com/notracking/hosts-blocklists/master/hostnames.txt
               )
 
 
@@ -66,8 +59,11 @@ parse_args() {
         exit
         ;;
       -l | --listsources)
-        list_sources
-        exit
+        LIST_SOURCES=1
+        ;;
+      -f | --blocklist)
+        BLOCKLIST_URL_FILE=${2}
+        shift
         ;;
       -s | --sourcelist)
         SOURCES=${2}
@@ -95,6 +91,10 @@ parse_args() {
         OUTFILE=${2}
         shift
         ;;
+      -v | --version)
+        echo $0 v$VERSION
+        exit 0
+        ;;
     esac
     shift
   done
@@ -119,13 +119,15 @@ list_usage() {
   printf "$0 <parameters>\n  Parameters are the following, only use one of the formats, -p OR --parameter, do not use both\n"
   printf "  %-25s %s\n" "-h --help" "This message"
   printf "  %-25s %s\n" "-l --listsources" "list sources available with index number"
+  printf "  %-25s %s\n" "-f --blocklist <filename>" "File with URL's of blocklist to retreive"
   printf "  %-25s %s\n" "-w --whitelist <filename>" "Use a white list file"
   printf "  %-25s %s\n" "-b --blacklist <filename>" "Use a blacklist file"
   printf "  %-25s %s\n" "-r --dns <ip or value>" "Set the dns return value"
   printf "  %-25s %s\n" "-u --force_unbind" "Force script to use unbind"
   printf "  %-25s %s\n" "-d --force_dnsmasq" "Force script to use dnsmasq"
   printf "  %-25s %s\n" "-o --outfile <filename>" "output to filename, do not restart any services"
-  printf "  %-25s %s\n" "-s --sourcelist <list>" "list sources to retreive blacklist from (must be comma seperated)"
+  printf "  %-25s %s\n" "-s --sourcelist <list>" "list sources to retreive block from (must be comma seperated)"
+  printf "  %-25s %s\n" "-v --version" "Print version of script and exit"
   printf "  %-25s %s\n" "" "use index number from -l value or URL"
   printf "\nExample:-  $0 -s 1,2,http://mylist.com/host.txt -r 0.0.0.0 \n"
   printf "\n *** See https://github.com/sfeakes/ipfire-scripts for more details ***\n"
@@ -137,17 +139,12 @@ list_usage() {
 list_sources() {
   cnt=1
   
-  DEFAULT_SOURCES=",$DEFAULT_SOURCES,"
-  printf "\nURLs with a '*' are prefered and will be used unles the -s flag is passed\n\n"
+  printf "\nAll URLs will be used unles the -s flag is passed\n\n"
   for url in "${BLOCK_HOST_URLS[@]}"; do
-    if [[ $DEFAULT_SOURCES =~ ",$cnt," ]]; then
-      printf "* "
-    else
-      printf "  "
-    fi
     printf "%2d %s\n" $cnt $url
 	cnt=$((cnt+1))
   done
+  echo ""
 }
 
 
@@ -177,10 +174,7 @@ experemental_nxdomain () {
 
     if [[ ! $domain =~ $last_domain\..* ]]; then
       echo $last_domain >> $exp_tmpfile
-#      echo "ADD    $last_domain"
       last_domain=$domain
-#    else
-#      echo "IGNORE $domain exists in $last_domain"
     fi
   done < $exp_reversefile
 
@@ -195,7 +189,9 @@ fail_urls=0
 
 get_list_from_url() {
   
-  if [ ! -z $VERBOSE ]; then echo Retreiving list from:- $1; fi
+  if [ ! -z $VERBOSE ]; then 
+    ccount=$(cat $TMP_HOSTS_FILE | wc -l)
+  fi
   
   # This awk is just for passing hosts files
   # bla | awk -v RS='\r|\n' '$1 ~ /^0.0.0.0|127.0.0.1/ {if ($2 != "localhost") printf "%s\n", tolower($2);}' 
@@ -212,7 +208,30 @@ get_list_from_url() {
   else
     pass_urls=$((pass_urls+1))
   fi
+
+  if [ ! -z $VERBOSE ]; then 
+    tcount=$(cat $TMP_HOSTS_FILE | wc -l)
+    echo "Retreived $(expr $tcount - $ccount) domain names from $1"
+  fi
 }
+
+read_sources() {
+  if [ ! -z $BLOCKLIST_URL_FILE ]; then
+    readarray -t BLOCK_HOST_URLS < <(cat $BLOCKLIST_URL_FILE | grep -i "^http")
+  else
+    BLOCK_HOST_URLS=(${DEFAULT_BLOCK_HOST_URLS[@]})
+  fi
+}
+
+
+
+
+####################################################################
+# 
+# Main
+#
+####################################################################
+
 
 parse_args "$@"
 
@@ -254,15 +273,16 @@ if [ -z $SYSTEMD_SERVICE ]; then
   fi
 fi
 
-if [ -z $SOURCES ]; then
-  SOURCES=",$DEFAULT_SOURCES,"
-else
-  SOURCES=",$SOURCES,"
-fi
-
-
 if [ -f "$TMP_HOSTS_FILE" ]; then
   rm -f $TMP_HOSTS_FILE
+fi
+
+# Load the URL's we are going to use
+read_sources
+
+if [ ! -z $LIST_SOURCES ]; then
+  list_sources
+  exit 0
 fi
 
 if [ -f "$LOCAL_BLACKLIST" ]; then
@@ -275,13 +295,22 @@ fi
 
 cnt=1
 
+if [ ! -z $SOURCES ]; then
+  SOURCES=",$SOURCES,"
+fi
+
 # Build the host file from the URL's
 for url in "${BLOCK_HOST_URLS[@]}"; do
-  if [[ $SOURCES =~ ",$cnt," ]]; then
+  if [ -z $SOURCES ] || [[ $SOURCES =~ ",$cnt," ]]; then
     get_list_from_url $url
   fi
   cnt=$((cnt+1))
 done
+
+if [ ! -z $VERBOSE ]; then 
+  count=$(cat $TMP_HOSTS_FILE | wc -l)
+  echo "Retreived $count domain names from local blacklist file"
+fi
 
 # Check if any URLs exist in the source list
 shopt -s nocasematch
@@ -329,6 +358,7 @@ finalcount=$(wc -l < $TMP_HOSTS_FILE)
 echo "####################################################################" >  $FINAL_HOSTS
 echo "# Block malicious sites at DNS level.                              #" >> $FINAL_HOSTS
 echo "# This file should not be manually edited                          #" >> $FINAL_HOSTS
+echo "# Created by $(basename $0) v$VERSION                                 #" >> $FINAL_HOSTS
 echo "# Last updated: `date`                       #" >> $FINAL_HOSTS
 echo "####################################################################" >>  $FINAL_HOSTS
 echo "" >> $FINAL_HOSTS

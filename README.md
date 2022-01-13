@@ -1,6 +1,6 @@
 # ipfire-scripts #
 
-## dns_blocker.sh ##
+## dns_blocklist.sh ##
 
 Designed to block domains at your ipFire firewall. ie (Add blocker of equivelent of what PiHole does)
 The script will download list of hosts / domains that are labeled as malicious from multiple sources and create a file that will cause unbound or dnsmasq to block them via DNS queries.

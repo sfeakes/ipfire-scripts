@@ -3,8 +3,8 @@
 ####################################################################
 # Create a hosts block list for use with unbound & dnsmasq         #
 #                                                                  #
-# Last updated: Dec 06 2016                                        #
-# Version 1.3.0                                                    #
+# Last updated: Jan 13 2021                                        #
+# Version 1.4.0                                                    #
 #                                                                  #
 ####################################################################
 
@@ -19,7 +19,7 @@ if [ -f /var/ipfire/dns/settings ]; then
       exit 1
     fi
   else
-    # File exists, but we don't have ipfire's rehash.  so let's do bat test.
+    # File exists, but we don't have ipfire's rehash.  so let's do quick n dirty test.
     if grep -q ENABLE_SAFE_SEARCH=on /var/ipfire/dns/settings; then
       >&2 echo "ERROR This script is not compatable with IPFire safe search, please turon off if you want to continue using this script"
       exit 1
@@ -27,10 +27,13 @@ if [ -f /var/ipfire/dns/settings ]; then
   fi
 fi
 
+###########################################
+# Let's really start now.
+
 #DEFAULT_DNS="127.0.0.1"
 DEFAULT_DNS="0.0.0.0"
 INTERNAL_WHITELIST="localhost\|localhost.localdomain\|local"
-VERSION="1.1"
+VERSION="1.4"
 
 # -l list sources
 # -s sourcelist

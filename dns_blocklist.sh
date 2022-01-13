@@ -8,6 +8,24 @@
 #                                                                  #
 ####################################################################
 
+# Before we start or even set our own variables, check one setting on ipfire that's not 
+# compatable with this script ENABLE_SAFE_SEARCH=on within dns settings.
+
+if [ -f /var/ipfire/dns/settings ]; then
+  if [ -f /usr/local/bin/readhash ]; then
+    eval $(/usr/local/bin/readhash /var/ipfire/dns/settings)
+    if [ "${ENABLE_SAFE_SEARCH}" = "on" ]; then
+      >&2 echo "ERROR This script is not compatable with IPFire safe search, please turon off if you want to continue using this script"
+      exit 1
+    fi
+  else
+    # File exists, but we don't have ipfire's rehash.  so let's do bat test.
+    if grep -q ENABLE_SAFE_SEARCH=on /var/ipfire/dns/settings; then
+      >&2 echo "ERROR This script is not compatable with IPFire safe search, please turon off if you want to continue using this script"
+      exit 1
+    fi
+  fi
+fi
 
 #DEFAULT_DNS="127.0.0.1"
 DEFAULT_DNS="0.0.0.0"
@@ -23,7 +41,11 @@ VERSION="1.1"
 # -d force dnsmasq
 # -o outfile
 
-
+# Need to check /var/ipfire/dns/settings and if that contains ENABLE_SAFE_SEARCH=on this script will not work. 
+# Below command :-
+# eval $(/usr/local/bin/readhash /var/ipfire/dns/settings)
+# will allow use of :-
+# if [ "${ENABLE_SAFE_SEARCH}" = "on" ]; then
 ####################################################################
 # 
 #

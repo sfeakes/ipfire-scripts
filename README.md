@@ -8,6 +8,11 @@ Usually these files are very large, since they contain many duplicates and multi
 For retreiving sources, Host file format and adblock format is supported.
 For writing to DNS configurations, unbound, dnsmasq are supported.
 If you want to write a local hosts file, you will need to modify the output with you local configuration.
+<hr>
+<b>PLEASE NOTE.</b>  This scipt is not currently compatable with IPFire's safe search feature. So please turn that off if you want to continue.<br><br>
+
+On the positive side, there should be no need for safe search with this script as it blocks far more, and if you are here you're probably probably have your own DNS servers configured for privacy reasons, so you probably don't use safe search
+<hr>
 
 To install, ssh to your ipfire machine and use the following commands.
 ```

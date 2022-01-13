@@ -11,7 +11,7 @@ If you want to write a local hosts file, you will need to modify the output with
 <hr>
 <b>PLEASE NOTE.</b>  This scipt is not currently compatable with IPFire's safe search feature. So please turn that off if you want to continue.<br><br>
 
-On the positive side, there should be no need for safe search with this script as it blocks far more, and if you are here you're probably probably have your own DNS servers configured for privacy reasons, so you probably don't use safe search
+On the positive side, there should be no need for safe search with this script as it blocks far more, and if you are here you probably have your own DNS servers configured for privacy reasons, so you may not use safe search anyway.
 <hr>
 
 To install, ssh to your ipfire machine and use the following commands.

@@ -4,7 +4,7 @@
 # Create a hosts block list for use with unbound & dnsmasq         #
 #                                                                  #
 # Last updated: Jan 13 2021                                        #
-# Version 1.4.0                                                    #
+# Version 1.5.0                                                    #
 #                                                                  #
 ####################################################################
 
@@ -33,7 +33,7 @@ fi
 #DEFAULT_DNS="127.0.0.1"
 DEFAULT_DNS="0.0.0.0"
 INTERNAL_WHITELIST="localhost\|localhost.localdomain\|local"
-VERSION="1.4"
+VERSION="1.5"
 
 # -l list sources
 # -s sourcelist
@@ -72,6 +72,8 @@ DNSMASQ_FINAL_HOSTS="/var/ipfire/dhcp/blocked.hosts"
 
 UNBOUND_SYSTEMD_SERVICE="/etc/init.d/unbound"
 DNSMASQ_SYSTEMD_SERVICE="/etc/init.d/dnsmasq"
+
+SELF=$(basename $0)
 
 #
 # Parse command line arguments.
@@ -131,9 +133,9 @@ parse_args() {
 log () {
   # IF we are running interactivle just print, if not (ie from cron) then log to ipfire
   if [ -t 1 ]; then
-    echo "$0: $1"
+    echo "$SELF: $*"
   else
-    logger -t ipfire "$0: $1"
+    logger -t "$SELF" "$*"
   fi
 }
 
@@ -225,6 +227,7 @@ get_list_from_url() {
   # Only lines with ||domain.name^ are used, all else thrown away
   # awk  -F'[\||\^| \t]+' -v RS='\r|\n' '{if ($0 ~ /^\|\|.*\^$/)  printf "%s\n",tolower($2) }' >> $TMP_HOSTS_FILE
 
+  tcount=0
   # This awk tries to combine both above.
   curl -v --max-time 30 --connect-timeout 5 --silent "$1" --stderr - | awk  -F'[\\\\|\\\\^| \t]+' -v RS='\r|\n' '{if (($0 ~ /^\|\|.*\^$/ || $1 ~ /^0.0.0.0|127.0.0.1/) && $2 ~ /.*\.[a-z].*/)  printf "%s\n",tolower($2) }'  >> $TMP_HOSTS_FILE
   if [ ${PIPESTATUS[0]} -ne 0 ]; then
@@ -232,12 +235,23 @@ get_list_from_url() {
     fail_urls=$((fail_urls+1))
   else
     pass_urls=$((pass_urls+1))
-  fi
-
-  if [ ! -z $VERBOSE ]; then 
     tcount=$(cat $TMP_HOSTS_FILE | wc -l)
-    echo "Retreived $(expr $tcount - $ccount) domain names from $1"
+    added=$(expr $tcount - $ccount)
+    if [ $added -le 0 ]; then
+      # Good curl but no domain names, let's try simple formatted style list.
+      #log "Retreived 0 domain names from $1, trying alternate format"
+      curl -v --max-time 30 --connect-timeout 5 --silent "$1" --stderr - | awk '{ if ($1 ~ /^[a-zA-Z0-9-].[a-zA-Z0-9\.-]/ ) printf "%s\n",tolower($1) }'  >> $TMP_HOSTS_FILE
+      tcount=$(cat $TMP_HOSTS_FILE | wc -l)
+    fi
   fi
+  
+  log "Retreived $(expr $tcount - $ccount) domain names from $1"
+  # If the above fails, look at plane domain list using regexp like '/^[a-zA-Z0-9].[a-zA-Z0-9.]/'
+  #
+  #if [ ! -z $VERBOSE ]; then 
+  #  #tcount=$(cat $TMP_HOSTS_FILE | wc -l)
+  #  echo "Retreived $(expr $tcount - $ccount) domain names from $1"
+  #fi
 }
 
 read_sources() {
@@ -314,14 +328,12 @@ if [ -f "$LOCAL_BLACKLIST" ]; then
   # Below is for blacklist in host file format
   #cat $LOCAL_BLACKLIST | awk '$1 ~ /^[0.0.0.0|127.0.0.1]/ {printf "%s\n", tolower($2)}' > $TMP_HOSTS_FILE
   grep -P '^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]$' $LOCAL_BLACKLIST >  $TMP_HOSTS_FILE
+  count=$(cat $TMP_HOSTS_FILE | wc -l)
+  log "Retreived $count domain names from local blacklist file"
 else
   touch $TMP_HOSTS_FILE
 fi
 
-if [ ! -z $VERBOSE ]; then 
-  count=$(cat $TMP_HOSTS_FILE | wc -l)
-  echo "Retreived $count domain names from local blacklist file"
-fi
 
 cnt=1
 
@@ -358,7 +370,9 @@ fi
 # remove any lines matching the whitelist file
 # make sure all entries are uniq
 
-if [ ! -z $VERBOSE ]; then echo "Cleaning & Sorting list of `cat $TMP_HOSTS_FILE | wc -l` entries"; fi
+#if [ ! -z $VERBOSE ]; then 
+  log "Cleaning & Sorting list of `cat $TMP_HOSTS_FILE | wc -l` entries"
+#fi
 
 #sed 's/^\.//;s/\.$//' $TMP_HOSTS_FILE | sort > $TMP_HOSTS_FILE.out
 #mv -f $TMP_HOSTS_FILE.out $TMP_HOSTS_FILE
@@ -375,7 +389,7 @@ if [[ ! -z $LOCAL_WHITELIST && -f $LOCAL_WHITELIST ]]; then
   if [ ! -z $VERBOSE ]; then 
     bcount=$(cat $TMP_HOSTS_FILE | wc -l)
     acount=$(cat $TMP_HOSTS_FILE.out | wc -l)
-    echo "Removed $(expr $bcount - $acount) domain names due to whitelist"
+    log "Removed $(expr $bcount - $acount) domain names due to whitelist"
   fi
   mv -f $TMP_HOSTS_FILE.out $TMP_HOSTS_FILE
 fi
@@ -421,7 +435,7 @@ chmod 644 $FINAL_HOSTS
 rm -f $TMP_HOSTS_FILE
 
 if [ ! -z $OUTFILE ]; then
-  echo "Written $finalcount entries to $FINAL_HOSTS"
+  log "Written $finalcount entries to $FINAL_HOSTS"
   exit
 fi
 

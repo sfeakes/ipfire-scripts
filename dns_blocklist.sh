@@ -3,8 +3,8 @@
 ####################################################################
 # Create a hosts block list for use with unbound & dnsmasq         #
 #                                                                  #
-# Last updated: Jan 13 2021                                        #
-# Version 1.5.0                                                    #
+# Last updated: Feb 02 2021                                        #
+# Version 1.5.1                                                    #
 #                                                                  #
 ####################################################################
 
@@ -132,7 +132,8 @@ parse_args() {
 #
 log () {
   # IF we are running interactivle just print, if not (ie from cron) then log to ipfire
-  if [ -t 1 ]; then
+  #if [ -t 1 ]; then # This will not be true in stdout redirect and fcron
+  if [ -t 0 ]; then # This will be for fcron
     echo "$SELF: $*"
   else
     logger -t "$SELF" "$*"
@@ -216,9 +217,7 @@ fail_urls=0
 
 get_list_from_url() {
   
-  if [ ! -z $VERBOSE ]; then 
-    ccount=$(cat $TMP_HOSTS_FILE | wc -l)
-  fi
+  ccount=$(cat $TMP_HOSTS_FILE | wc -l)
   
   # This awk is just for passing hosts files
   # bla | awk -v RS='\r|\n' '$1 ~ /^0.0.0.0|127.0.0.1/ {if ($2 != "localhost") printf "%s\n", tolower($2);}' 
@@ -236,7 +235,7 @@ get_list_from_url() {
   else
     pass_urls=$((pass_urls+1))
     tcount=$(cat $TMP_HOSTS_FILE | wc -l)
-    added=$(expr $tcount - $ccount)
+    added=$(( $tcount - $ccount ))
     if [ $added -le 0 ]; then
       # Good curl but no domain names, let's try simple formatted style list.
       #log "Retreived 0 domain names from $1, trying alternate format"
@@ -245,13 +244,7 @@ get_list_from_url() {
     fi
   fi
   
-  log "Retreived $(expr $tcount - $ccount) domain names from $1"
-  # If the above fails, look at plane domain list using regexp like '/^[a-zA-Z0-9].[a-zA-Z0-9.]/'
-  #
-  #if [ ! -z $VERBOSE ]; then 
-  #  #tcount=$(cat $TMP_HOSTS_FILE | wc -l)
-  #  echo "Retreived $(expr $tcount - $ccount) domain names from $1"
-  #fi
+  log "Retreived $(( $tcount - $ccount )) domain names from $1"
 }
 
 read_sources() {
@@ -386,11 +379,9 @@ mv -f $TMP_HOSTS_FILE.out $TMP_HOSTS_FILE
 
 if [[ ! -z $LOCAL_WHITELIST && -f $LOCAL_WHITELIST ]]; then
   cat $TMP_HOSTS_FILE | grep -v -x -f $LOCAL_WHITELIST > $TMP_HOSTS_FILE.out
-  if [ ! -z $VERBOSE ]; then 
-    bcount=$(cat $TMP_HOSTS_FILE | wc -l)
-    acount=$(cat $TMP_HOSTS_FILE.out | wc -l)
-    log "Removed $(expr $bcount - $acount) domain names due to whitelist"
-  fi
+  bcount=$(cat $TMP_HOSTS_FILE | wc -l)
+  acount=$(cat $TMP_HOSTS_FILE.out | wc -l)
+  log "Removed $(( $bcount - $acount )) domain names due to whitelist"
   mv -f $TMP_HOSTS_FILE.out $TMP_HOSTS_FILE
 fi
 
@@ -413,10 +404,12 @@ if [ $USE_UNBIND -eq 0 ]; then
   if [ "$DNS_RETURN" == "refuse" -o "$DNS_RETURN" == "static" -o "$DNS_RETURN" == "always_refuse" -o "$DNS_RETURN" == "always_nxdomain" ]; then
     experemental_nxdomain
     finalcount=$(wc -l < $TMP_HOSTS_FILE)
-    if [ ! -z $VERBOSE ]; then echo Writing list of $finalcount entries to unbound nxdomain configuration; fi
+    #if [ ! -z $VERBOSE ]; then echo Writing list of $finalcount entries to unbound nxdomain configuration; fi
+    log "Writing list of $finalcount entries to unbound nxdomain configuration"
     awk -v rtn=$DNS_RETURN '{printf "local-zone: \"%s\" %s\n",$1,rtn}' < $TMP_HOSTS_FILE >> $FINAL_HOSTS
   else
-    if [ ! -z $VERBOSE ]; then echo Writing list of $finalcount entries to unbound configuration; fi
+    #if [ ! -z $VERBOSE ]; then echo Writing list of $finalcount entries to unbound configuration; fi
+    log "Writing list of $finalcount entries to unbound nxdomain configuration"
     awk -v ip=$DNS_RETURN '{printf "local-data: \"%s A %s\"\n",$1,ip}' < $TMP_HOSTS_FILE >> $FINAL_HOSTS
   fi
 else
